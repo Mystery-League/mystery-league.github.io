@@ -5,52 +5,72 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <title>Answer Checker</title>
-  <meta name="description" content="All things puzzlehunts
-">
-
-  <link rel="stylesheet" href="/screen.css">
-  <link rel="canonical" href="https://www.puzzlehunt.net/checker">
-  <link rel="alternate" type="application/rss+xml" title="puzzlehunt.net" href="https://www.puzzlehunt.net/feed.xml">
+  <link rel="canonical" href="https://www.callingit.in">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+  <style>
+  p {
+      margin-bottom: 1em;
+  }
+  </style>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 </head>
+<body>
 
+<section class="section">
+    <div class="container">
+        <h1 class="title">
+            Answer Checker
+        </h1>
 
-  <body>
+        <p class="block">
+            This site creates a unique URL that you can share with your puzzle, to allow solvers to check the answer without spoiling themselves.
+        </p>
 
+        <div class="box has-background-primary">
+            <p id="loading">Loading...</p>
 
+            <form id="check">
+            <div class="field">
+                <label class="label" for="check-input"><strong id="check-label">Check your answer</strong></label>
+                <input type="text" class="input" id="check-input" name="check-input">
+            </div>
+            <button class="button" type="submit" id="check-submit">Check</button></p>
+            <p id="check-out"></p>
+            </form>
+        </div>
 
-    <div class="page-content">
-      <div class="wrapper">
-        <article class="post">
+        <div class="box">
+            <form id="gen">
+            <p>To create an answer checker, enter your answer below and click Generate URL:</p>
+            <div class="field">
+                <label class="label">Correct answer</label>
+                <input class="input" type="text" id="gen-input">
+            </div>
+            <div class="field">
+                <label class="label">Title</label>
+                <input class="input" type="text" id="gen-label">
+            </div>
+            <button type="submit" class="button is-link">Generate URL</button>
+            <br>
+            <br>
+            <div class="notification"><p id="gen-outer"><span id="gen-out"></span><a id="gen-link"></a></p></div>
+            </form>
+        </div>
 
-  <header class="post-header">
-    <h1 class="post-title">Answer Checker</h1>
-  </header>
+    </div>
+</section>
 
-  <div class="post-content">
-    <p>A simple client-side answer checker for puzzlehunts. Of course, requires JavaScript. As is typical, considers every answer as a string of letters A–Z by changing lowercase letters to uppercase and stripping any other characters. Built on Richard Moore’s <a href="https://github.com/ricmoo/scrypt-js">scrypt-js</a>, an implementation of Colin Percival’s <a href="https://www.tarsnap.com/scrypt.html">scrypt</a>.</p>
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      This is an implementation of <a href="https://www.puzzlehunt.net/checker">betaveros' Client-side Answer Checker</a>, with gratitude.<br>
+      Reskinned and hosted by <a href="https://www.mysteryleague.com">The Mystery League</a>.
+    </p>
+  </div>
+</footer>
 
-
-<p id="loading">Loading...</p>
-
-<form id="check">
-<p><label for="check-input"><strong id="check-label">Check your answer:</strong></label></p>
-<p><input type="text" id="check-input" name="check-input" /> <button type="submit" id="check-submit">Check</button></p>
-<p id="check-out"></p>
-</form>
-
-<form id="gen" style="margin-top: 4em;">
-<p>To create an answer checker, enter your answer below and click Generate URL:</p>
-<p>Correct answer: <input type="text" id="gen-input" /></p>
-<p>What this answer checker is for (optional): <input type="text" id="gen-label" /></p>
-<button type="submit">Generate URL</button>
-<p id="gen-outer"><span id="gen-out"></span><a id="gen-link"></a></p>
-</form>
-
-
-<script type="text/javascript" src="/static/js/scrypt.js"></script>
+<script type="text/javascript" src="/scrypt.js"></script>
 
 <script type="text/javascript">
 const encoder = new TextEncoder();
