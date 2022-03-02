@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calling It In!</title>
+<link rel="canonical" href="https://www.callingit.in">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+<link rel="stylesheet" href="/screen.css">
+</head>
+<body class="has-background-light">
+
+<section class="section">
+    <div class="container">
+        <h1 class="title has-text-centered" id="check-label"></h1>
+        <div id="subtitle" class="subtitle has-text-centered">
+            Answer Checker
+        </div>
+
+        <div class="box">
+            <p class="has-text-white" id="loading">Loading...</p>
+
+            <form id="check">
+            <div class="field">
+                <label class="label" for="check-input">Enter your answer</label>
+                <input type="text" class="input" id="check-input" name="check-input">
+            </div>
+            <button class="button is-link" type="submit" id="check-submit">Check</button></p>
+            <p id="check-out"></p>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer has-background-info-dark has-text-white">
+  <div class="content has-text-centered">
+    <p>
+      <b>Calling It In!</b> A stand-alone puzzle answer checker. <a href="/">Create your own</a>.
+      <br>
+      A <a href="https://www.mysteryleague.com">The Mystery League</a> project.
+      <br>
+      Original code by <a href="https://www.puzzlehunt.net/checker">betaveros</a>, used with permission and gratitude.<br>
+    </p>
+  </div>
+</footer>
+
+<script type="text/javascript" src="/scrypt.js"></script>
+<script type="text/javascript" src="/code.js"></script>
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function() {
+    const checkForm = document.getElementById('check');
+    const checkInput = document.getElementById('check-input');
+    const checkTitle = document.getElementById('check-label');
+    const checkOut = document.getElementById('check-out');
+    // Always strings.
+    let salt = "";
+    let hash = "";
+    let label = "";
+    function updateFromHash() {
+        const params = location.hash.substr(1).split('#');
+        console.log(params);
+        salt = params[0] || "";
+        hash = params[1] || "";
+        label = params[2] || "";
+        if (salt && hash) {
+            checkForm.style.display = "block";
+            if (label) {
+                checkTitle.textContent = decoder.decode(unb64(label));
+            } else {
+                checkTitle.textContent = "Answer Checker";
+                document.getElementById('subtitle').style.display = "none";
+            }
+        } else {
+            checkForm.style.display = "none";
+        }
+    };
+
+    checkForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        checkInput.select();
+        const answer = canonicalize(checkInput.value);
+        checkOut.textContent = 'Checking...';
+        checkOut.className = 'padded-callout';
+        checkHash(1, label, salt, hash, answer, function (v) {
+            if ('error' in v) {
+                checkOut.className = 'padded-callout error';
+                checkOut.textContent = 'Error: ' + v.error;
+            } else if ('correct' in v) {
+                checkOut.className = v.correct ? 'padded-callout success' : 'padded-callout error';
+                checkOut.textContent = answer + ' is ' + (v.correct ? 'correct!' : 'incorrect.');
+            } else if ('progress' in v) {
+                checkOut.textContent = 'Checking (' + Math.floor(v.progress * 100) + '%)...';
+            }
+        });
+    });
+
+    updateFromHash();
+    window.addEventListener('hashchange', updateFromHash);
+
+    document.getElementById('loading').style.display = "none";
+});
+</script>
+</body>
+</html>

@@ -1,50 +1,32 @@
 <!DOCTYPE html>
 <html>
-
-  <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Answer Checker</title>
-  <link rel="canonical" href="https://www.callingit.in">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-  <style>
-  p {
-      margin-bottom: 1em;
-  }
-  </style>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calling It In!</title>
+<link rel="canonical" href="https://www.callingit.in">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+<link rel="stylesheet" href="/screen.css">
 </head>
-<body>
+<body class="has-background-light">
 
 <section class="section">
     <div class="container">
-        <h1 class="title">
+        <h1 class="title has-text-centered">
             Calling It In!
         </h1>
 
-        <div class="subtitle">
+        <div class="subtitle has-text-centered">
             A stand-alone puzzle answer checker
         </div>
         <p class="block">
-            This site creates a unique URL that you can share with your puzzle, to allow solvers to check the answer without spoiling themselves.
+            Create a unique URL that you can share with your solvers, so they can check the answer without being spoiled. Simply enter the correct answer and the title of your puzzle below.
         </p>
 
-        <div class="box has-background-primary">
-            <p id="loading">Loading...</p>
-
-            <form id="check">
-            <div class="field">
-                <label class="label" for="check-input"><strong id="check-label">Check your answer</strong></label>
-                <input type="text" class="input" id="check-input" name="check-input">
-            </div>
-            <button class="button" type="submit" id="check-submit">Check</button></p>
-            <p id="check-out"></p>
-            </form>
-        </div>
 
         <div class="box">
             <form id="gen">
-            <p>To create an answer checker, enter your answer below and click Generate URL:</p>
             <div class="field">
                 <label class="label">Correct answer</label>
                 <input class="input" type="text" id="gen-input">
@@ -56,168 +38,30 @@
             <button type="submit" class="button is-link">Generate URL</button>
             <br>
             <br>
-            <div class="notification"><p id="gen-outer"><span id="gen-out"></span><a id="gen-link"></a></p></div>
             </form>
         </div>
+
+        <div class="box"><p id="gen-outer"><span id="gen-out"></span><a id="gen-link"></a></p></div>
 
     </div>
 </section>
 
-<footer class="footer">
+<form id="check"></form>
+
+<footer class="footer has-background-info-dark has-text-white">
   <div class="content has-text-centered">
     <p>
-      This is an implementation of <a href="https://www.puzzlehunt.net/checker">betaveros' Client-side Answer Checker</a>, with gratitude.<br>
-      Reskinned and hosted by <a href="https://www.mysteryleague.com">The Mystery League</a>.
+      A <a href="https://www.mysteryleague.com">The Mystery League</a> project.
+      <br>
+      Code by <a href="https://www.puzzlehunt.net/checker">betaveros</a>, used with permission and gratitude.<br>
     </p>
   </div>
 </footer>
 
 <script type="text/javascript" src="/scrypt.js"></script>
-
+<script type="text/javascript" src="/code.js"></script>
 <script type="text/javascript">
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
-function b64OfArray(arr) {
-    const carr = [];
-    arr.forEach((u8) => {
-        carr.push(String.fromCharCode(u8));
-    });
-    return btoa(carr.join(""));
-}
-function unb64(s) {
-    const bs = atob(s);
-    const uarr = new Uint8Array(bs.length);
-    for (let i = 0; i < bs.length; i++) {
-        uarr[i] = bs.charCodeAt(i);
-    }
-    return uarr;
-}
-
-function canonicalize(rawGuess) {
-    rawGuess = rawGuess.toUpperCase();
-    let canon = "";
-    for (var i = 0; i < rawGuess.length; i++) {
-        if (/[A-Z]/.test(rawGuess[i])) {
-            canon += rawGuess[i];
-        }
-    }
-    return canon;
-}
-
-// These security parameters are weaker than what most settings would need, to
-// keep things reasonably fast, since our pure JavaScript library is slower
-// than other options, and URLs reasonably compact. A brute-forcer who ran
-// scrypt elsewhere with these parameters could go much faster, but this
-// setting really isn't high-stakes.
-
-// Don't copy my parameters into "actual crypto code" (why would you do that.
-// just. why)
-function generateLocalSalt() {
-    let saltArr = new Uint8Array(12);
-    if (window.crypto && window.crypto.getRandomValues) {
-        window.crypto.getRandomValues(saltArr);
-    } else {
-        // Not secure, but like I said, I think cryptographic guarantees just
-        // aren't worth breaking over.
-        for (let i = 0; i < saltArr.length; i++) {
-            saltArr[i] = Math.floor(Math.random()*256);
-        }
-    }
-    return b64OfArray(saltArr);
-}
-
-function generateHash(label, answer, callback) {
-    const version = '1';
-    // The caller should canonicalize the answer!
-    const salt = generateLocalSalt();
-    // Note: add the label even if it's empty. Also assume the label is ASCII
-    // (by being v0 URI-encoded or v1 base64ed) already.
-    const fullSalt = encoder.encode("puzzlehunt.net/checker#" + version + '#' + salt + '#' + label);
-    scrypt.scrypt(encoder.encode(answer), fullSalt, 4096, 8, 1, 24, function (progress) {
-        callback({ 'progress': progress });
-    }).then(function (key) {
-        callback({
-            'version': version,
-            'salt': salt,
-            'hash': b64OfArray(key),
-        });
-    });
-}
-
-function checkHash(version, label, salt, hash, answer, callback) {
-    // Weirdly, the version doesn't yet affect this part of the code.
-    if (version !== '0' && version !== '1') {
-        callback({
-            'error': 'Unsupported version: ' + version,
-        });
-    }
-    // The caller should canonicalize the answer!
-    // Note: add the label even if it's empty. Also assume the label is ASCII
-    // (by being URI-encoded) already.
-    const fullSalt = encoder.encode("puzzlehunt.net/checker#" + version + '#' + salt + '#' + label);
-    scrypt.scrypt(encoder.encode(answer), fullSalt, 4096, 8, 1, 24, function (progress) {
-        callback({ 'progress': progress });
-    }).then(function (key) {
-        if (b64OfArray(key) === hash) {
-            callback({ 'correct': true });
-        } else {
-            callback({ 'correct': false });
-        }
-    });
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    const checkForm = document.getElementById('check');
-    const checkInput = document.getElementById('check-input');
-    const checkLabel = document.getElementById('check-label');
-    const checkOut = document.getElementById('check-out');
-    // Always strings.
-    let version = "";
-    let salt = "";
-    let hash = "";
-    let label = "";
-    function updateFromHash() {
-        const params = location.hash.substr(1).split('#');
-        version = params[0] || "";
-        salt = params[1] || "";
-        hash = params[2] || "";
-        label = params[3] || "";
-        if (version && salt && hash) {
-            checkForm.style.display = "block";
-            if (version === "0" && label) {
-                checkLabel.textContent = "Check your answer for " + decodeURIComponent(label) + ":";
-            } else if (version === "1" && label) {
-                checkLabel.textContent = "Check your answer for " + decoder.decode(unb64(label)) + ":";
-            } else {
-                checkLabel.textContent = "Check your answer:";
-            }
-        } else {
-            checkForm.style.display = "none";
-        }
-    };
-
-    checkForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        checkInput.select();
-        const answer = canonicalize(checkInput.value);
-        checkOut.textContent = 'Checking...';
-        checkOut.className = 'padded-callout';
-        checkHash(version, label, salt, hash, answer, function (v) {
-            if ('error' in v) {
-                checkOut.className = 'padded-callout error';
-                checkOut.textContent = 'Error: ' + v.error;
-            } else if ('correct' in v) {
-                checkOut.className = v.correct ? 'padded-callout success' : 'padded-callout error';
-                checkOut.textContent = answer + ' is ' + (v.correct ? 'correct!' : 'incorrect.');
-            } else if ('progress' in v) {
-                checkOut.textContent = 'Checking (' + Math.floor(v.progress * 100) + '%)...';
-            }
-        });
-    });
-
-    updateFromHash();
-    window.addEventListener('hashchange', updateFromHash);
-
     const genForm = document.getElementById('gen');
     const genOuter = document.getElementById('gen-outer');
     const genOut = document.getElementById('gen-out');
@@ -231,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
         genOut.textContent = 'Generating...';
         genLink.textContent = '';
         genLink.href = '#';
-        // this part is version 1 instead of version 0...
         const genLabel = b64OfArray(encoder.encode(document.getElementById('gen-label').value));
         generateHash(genLabel, answer, function (v) {
             if ('error' in v) {
@@ -241,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 genLink.href = '#';
             } else if ('version' in v && 'salt' in v && 'hash' in v) {
                 genOuter.className = 'padded-callout success';
-                genOut.textContent = 'Answer checker URL for ' + answer + ': ';
-                const url = location.protocol + '//' + location.host + location.pathname + '#' + [v.version, v.salt, v.hash, genLabel].join('#');
+                genOut.textContent = "Here's your unique URL for " + answer + ': ';
+                const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('#');
                 genLink.textContent = url;
                 genLink.href = url;
             } else if ('progress' in v) {
@@ -254,20 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     genForm.style.display = "block";
-    document.getElementById('loading').style.display = "none";
 });
 </script>
-
-
-  </div>
-
-</article>
-
-      </div>
-    </div>
-
-
-
-  </body>
-
+</body>
 </html>
