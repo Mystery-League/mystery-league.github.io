@@ -7,7 +7,7 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:site" content="@pzlr">
 <meta name="twitter:title" content="Calling It In!">
-<meta name="twitter:description" content="A stand-alone puzzle answer checker.">
+<meta name="twitter:description" content="Answer Checker">
 <meta name="twitter:image" content="/phone.png">
 <title>Calling It In!</title>
 <link rel="canonical" href="https://www.callingit.in">
@@ -94,7 +94,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (salt && hash) {
             checkForm.style.display = "block";
             if (label) {
-                checkTitle.textContent = decoder.decode(unb64(label));
+                var title = decoder.decode(unb64(label));
+                checkTitle.textContent = title;
+                document.querySelector('meta[name="twitter:title"]').setAttribute("content", title);
             } else {
                 checkTitle.textContent = "Answer Checker";
                 document.getElementById('subtitle').style.display = "none";
