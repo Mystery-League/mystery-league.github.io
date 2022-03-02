@@ -14,7 +14,11 @@
     display: none;
 }
 
-footer a {
+.credits a {
+    color: #eee;
+    text-decoration: underline;
+}
+
+.credits a:hover {
   color: white;
-  text-decoration: underline;
 }

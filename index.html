@@ -65,7 +65,7 @@
 
 <footer class="footer has-background-info-dark has-text-white">
   <div class="content has-text-centered">
-    <p>
+    <p class="credits">
       A <a href="https://twitter.com/pzlr">Mystery League</a> project.
       <br>
       Code by <a href="https://www.puzzlehunt.net/checker">betaveros</a>, used with permission and gratitude.<br>
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 genLink.textContent = '';
                 genLink.href = '#';
             } else if ('version' in v && 'salt' in v && 'hash' in v) {
-                genOut.textContent = "Answer checker URL for " + genLabelText + ': ';
+                genOut.textContent = "Answer checker for " + genLabelText + ': ';
                 const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('-');
                 genLink.textContent = url;
                 genLink.href = url;

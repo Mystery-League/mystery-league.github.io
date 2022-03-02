@@ -43,9 +43,15 @@
 
 <footer class="footer has-background-info-dark has-text-white">
   <div class="content has-text-centered">
-    <p>
-      <b>Calling It In!</b> A stand-alone puzzle answer checker. <a href="/">Create your own</a>.
-      <br>
+    <p class="is-size-5 mb-3">
+      <b>Calling It In!</b>
+      A stand-alone puzzle answer checker
+    </p>
+    <p class="is-size-5">
+      <a class="button is-small is-lite" href="/">Create your own</a>
+    </p>
+    <br>
+    <p class="credits">
       A <a href="https://twitter.com/pzlr">Mystery League</a> project.
       <br>
       Original code by <a href="https://www.puzzlehunt.net/checker">betaveros</a>, used with permission and gratitude.<br>
@@ -99,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if ('correct' in v) {
                 checkOutWrap.className = 'notification ' + (v.correct ? 'is-success' : 'is-danger');
                 checkOut.className = v.correct ? 'padded-callout success' : 'padded-callout error';
-                checkOut.textContent = answer + ' is ' + (v.correct ? 'correct!' : 'incorrect.');
+                checkOut.textContent = answer + ' is ' + (v.correct ? 'correct! 🏆' : 'incorrect 😔');
             } else if ('progress' in v) {
                 checkOutWrap.className = 'notification is-warning';
                 checkOut.textContent = 'Checking (' + Math.floor(v.progress * 100) + '%)...';
