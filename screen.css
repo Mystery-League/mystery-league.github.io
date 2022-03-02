@@ -1,3 +1,15 @@
+#gen-outer {
+    display: none;
+}
+
+#gen-outer .message {
+    background: white;
+}
+
+#gen-outer a {
+    word-break: break-all;
+}
+
 #out-wrap {
     display: none;
 }

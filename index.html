@@ -13,6 +13,9 @@
 
 <section class="section">
     <div class="container">
+      <div class="columns">
+      <div class="column is-three-fifths is-offset-one-fifth">
+
         <h1 class="title has-text-centered">
             Calling It In!
         </h1>
@@ -41,8 +44,20 @@
             </form>
         </div>
 
-        <div class="box"><p id="gen-outer"><span id="gen-out"></span><a id="gen-link"></a></p></div>
+        <div id="gen-outer">
+        <article class="message">
+          <div class="message-header">
+            <p id="gen-out"></p>
+          </div>
+          <div class="message-body">
+            <a id="gen-link" class="is-size-4"></a>
+          </div>
+        </article>
+        </div>
 
+
+      </div>
+      </div>
     </div>
 </section>
 
@@ -71,20 +86,19 @@ document.addEventListener('DOMContentLoaded', function() {
     genForm.addEventListener('submit', function (event) {
         event.preventDefault();
         const answer = canonicalize(genInput.value);
-        genOuter.className = 'padded-callout';
+        genOuter.style.display = "block";
         genOut.textContent = 'Generating...';
         genLink.textContent = '';
         genLink.href = '#';
-        const genLabel = b64OfArray(encoder.encode(document.getElementById('gen-label').value));
+        const genLabelText = document.getElementById('gen-label').value;
+        const genLabel = b64OfArray(encoder.encode(genLabelText));
         generateHash(genLabel, answer, function (v) {
             if ('error' in v) {
-                genOuter.className = 'padded-callout error';
                 genOut.textContent = 'Error: ' + v.error;
                 genLink.textContent = '';
                 genLink.href = '#';
             } else if ('version' in v && 'salt' in v && 'hash' in v) {
-                genOuter.className = 'padded-callout success';
-                genOut.textContent = "Here's your unique URL for " + answer + ': ';
+                genOut.textContent = "Answer checker URL for " + genLabelText + ': ';
                 const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('#');
                 genLink.textContent = url;
                 genLink.href = url;
