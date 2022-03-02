@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let hash = "";
     let label = "";
     function updateFromHash() {
-        const params = location.hash.substr(1).split('#');
+        const params = location.hash.substr(1).split('-');
         salt = params[0] || "";
         hash = params[1] || "";
         label = params[2] || "";

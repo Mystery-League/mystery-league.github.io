@@ -1,5 +1,6 @@
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
+
 function b64OfArray(arr) {
     const carr = [];
     arr.forEach((u8) => {

@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 genLink.href = '#';
             } else if ('version' in v && 'salt' in v && 'hash' in v) {
                 genOut.textContent = "Answer checker URL for " + genLabelText + ': ';
-                const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('#');
+                const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('-');
                 genLink.textContent = url;
                 genLink.href = url;
             } else if ('progress' in v) {
