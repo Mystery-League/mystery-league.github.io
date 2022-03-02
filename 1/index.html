@@ -13,9 +13,12 @@
 
 <section class="section">
     <div class="container">
+      <div class="columns">
+      <div class="column is-three-fifths is-offset-one-fifth">
+
         <h1 class="title has-text-centered" id="check-label"></h1>
         <div id="subtitle" class="subtitle has-text-centered">
-            Answer Checker
+            answer checker
         </div>
 
         <div class="box">
@@ -27,10 +30,14 @@
                 <input type="text" class="input" id="check-input" name="check-input">
             </div>
             <button class="button is-link" type="submit" id="check-submit">Check</button></p>
-            <p id="check-out"></p>
             </form>
         </div>
 
+        <div id="out-wrap" class="notification is-warning">
+          <p><b id="check-out"></b></p>
+        </div>
+    </div>
+    </div>
     </div>
 </section>
 
@@ -39,7 +46,7 @@
     <p>
       <b>Calling It In!</b> A stand-alone puzzle answer checker. <a href="/">Create your own</a>.
       <br>
-      A <a href="https://www.mysteryleague.com">The Mystery League</a> project.
+      A <a href="https://twitter.com/pzlr">The Mystery League</a> project.
       <br>
       Original code by <a href="https://www.puzzlehunt.net/checker">betaveros</a>, used with permission and gratitude.<br>
     </p>
@@ -54,13 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const checkInput = document.getElementById('check-input');
     const checkTitle = document.getElementById('check-label');
     const checkOut = document.getElementById('check-out');
+    const checkOutWrap = document.getElementById('out-wrap');
     // Always strings.
     let salt = "";
     let hash = "";
     let label = "";
     function updateFromHash() {
         const params = location.hash.substr(1).split('#');
-        console.log(params);
         salt = params[0] || "";
         hash = params[1] || "";
         label = params[2] || "";
@@ -81,16 +88,20 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         checkInput.select();
         const answer = canonicalize(checkInput.value);
+        checkOutWrap.style.display = "block";
         checkOut.textContent = 'Checking...';
         checkOut.className = 'padded-callout';
         checkHash(1, label, salt, hash, answer, function (v) {
             if ('error' in v) {
+                checkOutWrap.className = 'notification is-danger';
                 checkOut.className = 'padded-callout error';
                 checkOut.textContent = 'Error: ' + v.error;
             } else if ('correct' in v) {
+                checkOutWrap.className = 'notification ' + (v.correct ? 'is-success' : 'is-danger');
                 checkOut.className = v.correct ? 'padded-callout success' : 'padded-callout error';
                 checkOut.textContent = answer + ' is ' + (v.correct ? 'correct!' : 'incorrect.');
             } else if ('progress' in v) {
+                checkOutWrap.className = 'notification is-warning';
                 checkOut.textContent = 'Checking (' + Math.floor(v.progress * 100) + '%)...';
             }
         });

@@ -1,3 +1,7 @@
+#out-wrap {
+    display: none;
+}
+
 footer a {
   color: white;
   text-decoration: underline;
