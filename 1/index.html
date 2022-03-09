@@ -128,6 +128,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 checkOutWrap.className = 'notification ' + (v.correct ? 'is-success' : 'is-danger');
                 checkOut.className = v.correct ? 'padded-callout success' : 'padded-callout error';
                 checkOut.textContent = submittedInput.toUpperCase() + ' is ' + (v.correct ? 'correct! 🏆' : 'incorrect 😔');
+
+                // https://support.google.com/analytics/answer/11147304?hl=en&ref_topic=9756175
+                gtag("event", "solve", {
+                  title: title,
+                  submission: submittedInput,
+                  correct: v.correct
+                });
             } else if ('progress' in v) {
                 checkOutWrap.className = 'notification is-warning';
                 checkOut.textContent = 'Checking (' + Math.floor(v.progress * 100) + '%)...';
