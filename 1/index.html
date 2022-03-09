@@ -23,7 +23,6 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-MV3YPD7DZ2');
 </script>
 </head>
@@ -80,6 +79,7 @@
 <script type="text/javascript" src="/scrypt.js"></script>
 <script type="text/javascript" src="/code.js"></script>
 <script type="text/javascript">
+var title = "Answer Checker";
 document.addEventListener('DOMContentLoaded', function() {
     const checkForm = document.getElementById('check');
     const checkInput = document.getElementById('check-input');
@@ -98,15 +98,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (salt && hash) {
             checkForm.style.display = "block";
             if (label) {
-                var title = decoder.decode(unb64(label));
-                checkTitle.textContent = title;
-                // Unfort, this doesn't actually affect the Twitter card-making bot, which looks at raw HTML
+                title = decoder.decode(unb64(label));
+                // Unfort, this following doesn't actually affect the Twitter card-making bot, which looks at raw HTML
                 document.querySelector('meta[name="twitter:title"]').setAttribute("content", title);
                 document.querySelector('meta[property="og:title"]').setAttribute("content", title);
             } else {
-                checkTitle.textContent = "Answer Checker";
                 document.getElementById('subtitle').style.display = "none";
             }
+            checkTitle.textContent = title;
         } else {
             checkForm.style.display = "none";
         }
@@ -115,7 +114,8 @@ document.addEventListener('DOMContentLoaded', function() {
     checkForm.addEventListener('submit', function (event) {
         event.preventDefault();
         checkInput.select();
-        const answer = canonicalize(checkInput.value);
+        const submittedInput = checkInput.value;
+        const answer = canonicalize(submittedInput);
         checkOutWrap.style.display = "block";
         checkOut.textContent = 'Checking...';
         checkOut.className = 'padded-callout';
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if ('correct' in v) {
                 checkOutWrap.className = 'notification ' + (v.correct ? 'is-success' : 'is-danger');
                 checkOut.className = v.correct ? 'padded-callout success' : 'padded-callout error';
-                checkOut.textContent = answer + ' is ' + (v.correct ? 'correct! 🏆' : 'incorrect 😔');
+                checkOut.textContent = submittedInput.toUpperCase() + ' is ' + (v.correct ? 'correct! 🏆' : 'incorrect 😔');
             } else if ('progress' in v) {
                 checkOutWrap.className = 'notification is-warning';
                 checkOut.textContent = 'Checking (' + Math.floor(v.progress * 100) + '%)...';
