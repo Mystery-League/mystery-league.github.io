@@ -113,7 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 genLink.href = '#';
             } else if ('version' in v && 'salt' in v && 'hash' in v) {
                 genOut.textContent = "Answer checker for " + genLabelText + ': ';
-                const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('-');
+                // Trailing equal signs get igonred by Mastondon. The easiest and most backward-compatible fix is to add another "-" delimiter which will just get ignored anyway.
+                const url = location.protocol + '//' + location.host + '/' + v.version + '/#' + [v.salt, v.hash, genLabel].join('-') + "-"; 
                 genLink.textContent = url;
                 genLink.href = url;
             } else if ('progress' in v) {
